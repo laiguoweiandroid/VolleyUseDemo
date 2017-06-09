@@ -1,15 +1,21 @@
 package com.example.guowei.volleyusedemo.volleyApi;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.widget.ImageView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.guowei.volleyusedemo.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -121,6 +127,78 @@ public class VolleyUtil {
         return false;
     }
 
+    /**
+     * volley图片网络请求加载借口测试
+     * @param url
+     * @param listener
+     * @param maxWidth
+     * @param maxHeight
+     * @param config
+     * @param errorListener
+     * @return
+     */
+    public boolean volleyImageRequestTest(
+            String url,
+            String tag,
+            Response.Listener<Bitmap> listener,
+            int maxWidth,
+            int maxHeight,
+            Bitmap.Config config,
+            Response.ErrorListener errorListener){
+        if(isNetworkAvaliable()){
+            ImageRequest imageRequest=new ImageRequest(
+                    url,
+                    listener,
+                    maxWidth,
+                    maxHeight,
+                    config,
+                    errorListener);
+            if (!tag.isEmpty()){
+                imageRequest.setTag(tag);
+            }
+              mRequestQueue.add(imageRequest);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param url
+     * @param v
+     * @return
+     */
+    public boolean volleyimageLoaderTest(
+            String url,
+            ImageView v){
+        if(isNetworkAvaliable()){
+            ImageLoader imageLoader =new ImageLoader(mRequestQueue,new BitmapCache());
+            ImageLoader.ImageListener listener = imageLoader.getImageListener(v,
+                    R.mipmap.ic_launcher,R.mipmap.ic_launcher);
+            imageLoader.get(url,listener);
+            return true;
+        }
+     return false;
+    }
+
+    /**
+     *
+     * @param url
+     * @param v
+     * @return
+     */
+    public boolean volleyimageLoaderTest(
+            String url,
+            NetworkImageView v){
+        if(isNetworkAvaliable()){
+            ImageLoader imageLoader =new ImageLoader(mRequestQueue,new BitmapCache());
+            v.setDefaultImageResId(R.mipmap.ic_launcher);
+            v.setErrorImageResId(R.mipmap.ic_launcher);
+            v.setImageUrl(url,imageLoader);
+            return true;
+        }
+        return false;
+    }
     /**
      * 取消请求
      * @param tag
